@@ -69,9 +69,10 @@ func main() {
   validateFilters()
 
   for {
+    fmt.Println("------------------------------------------\n\n")
     request()
     // to honor rate limit
-    time.Sleep(5 * time.Second)
+    time.Sleep(6 * time.Second)
   }
 }
 
@@ -79,7 +80,9 @@ func request() {
 
   // get date in dd-mm-yyyy format
   date := time.Now().Format("02-01-2006")
+  fmt.Println("****************************")
   fmt.Println("Today's Date => ", date)
+  fmt.Println("****************************")
 
   url := fmt.Sprintf("https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByPin?pincode=%v&date=%v", 
                       filters.pin, date)
@@ -144,8 +147,6 @@ func checkForSlotsAvailability(i interface{}) {
     availableDose1 := session["available_capacity_dose1"].(float64)
     availableDose2 := session["available_capacity_dose2"].(float64)
 
-    fmt.Println("***********************************")
-    fmt.Println("***********************************")
     fmt.Println(c["address"])
     fmt.Println(c["name"])
     fmt.Println("DATE => ", date)
@@ -155,9 +156,10 @@ func checkForSlotsAvailability(i interface{}) {
     fmt.Println("DOSE 2 =>", availableDose2)
     fmt.Println("AGE LIMIT =>", ageLimit)
     fmt.Println("***********************************")
-    fmt.Println("***********************************")
 
     if availableDose1 > 0  && filters.dose == 1 {
+      fmt.Println("***********************************")
+      fmt.Println("***********************************")
       fmt.Println("DOSE 1 AVAILABILITY")
       fmt.Println("ALERTTTTTTT")
       fmt.Println("ALERTTTTTTT")
@@ -165,9 +167,13 @@ func checkForSlotsAvailability(i interface{}) {
       content = fmt.Sprintf("Date: %v | Dose No: 1 | Age: %v+\nAvailable: %v %v\n%v-%v", 
                              date, ageLimit, availableDose1, vaccine, c["name"], c["address"])
       alert(content)
+      fmt.Println("***********************************")
+      fmt.Println("***********************************")
     }
     
     if availableDose2 > 0  && filters.dose == 2 {
+      fmt.Println("***********************************")
+      fmt.Println("***********************************")
       fmt.Println("DOSE 2 AVAILABILITY")
       fmt.Println("ALERTTTTTTT")
       fmt.Println("ALERTTTTTTT")
@@ -175,6 +181,8 @@ func checkForSlotsAvailability(i interface{}) {
       content = fmt.Sprintf("Date: %v | Dose No: 2 | Age: %v+\nAvailable: %v %v\n%v-%v",
                             date, ageLimit, availableDose2, vaccine, c["name"], c["address"])
       alert(content)
+      fmt.Println("***********************************")
+      fmt.Println("***********************************")
     }
   }
 
