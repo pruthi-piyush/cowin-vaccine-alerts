@@ -20,6 +20,7 @@ type Filters struct {
 }
 
 var filters Filters
+var alertsTrackerMap map[string]float64
    
 func init() {
 
@@ -65,6 +66,7 @@ func main() {
 
   fmt.Println("Hello ! Please Stay Safe for Yourself and your FAMILY!")
   fmt.Println("Filters Provided ", filters)
+  alertsTrackerMap = make(map[string]float64)
  
   validateFilters()
 
@@ -126,10 +128,13 @@ func checkForSlotsAvailability(i interface{}) {
 
   for _,center := range(centersArray.([]interface{})) {
     c := center.(map[string]interface{})
+    center_id := c["center_id"].(float64)
+    centerId := fmt.Sprintf("%f", center_id)
 
     sessions := c["sessions"].([]interface{})
     for _, sess := range(sessions) {
       session := sess.(map[string]interface{})
+      sessionId := session["session_id"].(string)
       ageLimit := session["min_age_limit"].(float64)
       vaccine := session["vaccine"]
 
@@ -159,6 +164,15 @@ func checkForSlotsAvailability(i interface{}) {
       fmt.Println("***********************************")
 
       if availableDose1 > 0  && filters.dose == 1 {
+
+        // if key exists
+        if val, ok := alertsTrackerMap[centerId+"_"+sessionId] ; ok {
+          // if available doses have reduced by >=50% or are more than previous value then only send alert else drop it
+          fiftyPercentValue := val * 0.5
+          if availableDose1 > fiftyPercentValue && availableDose1 <= val {
+            continue
+          }
+        }
         fmt.Println("***********************************")
         fmt.Println("***********************************")
         fmt.Println("DOSE 1 AVAILABILITY")
@@ -168,11 +182,22 @@ func checkForSlotsAvailability(i interface{}) {
         content = fmt.Sprintf("Date: %v | Dose No: 1 | Age: %v+\nAvailable: %v %v\n%v-%v", 
         date, ageLimit, availableDose1, vaccine, c["name"], c["address"])
         alert(content)
+        alertsTrackerMap[centerId+"_"+sessionId] = availableDose1
+
         fmt.Println("***********************************")
         fmt.Println("***********************************")
       }
 
       if availableDose2 > 0  && filters.dose == 2 {
+
+        // if key exists
+        if val, ok := alertsTrackerMap[centerId+"_"+sessionId] ; ok {
+          // if available doses have reduced by >=50% or are more than previous value then only send alert else drop it
+          fiftyPercentValue := val * 0.5
+          if availableDose2 > fiftyPercentValue && availableDose2 <= val {
+            continue
+          }
+        }
         fmt.Println("***********************************")
         fmt.Println("***********************************")
         fmt.Println("DOSE 2 AVAILABILITY")
@@ -182,6 +207,8 @@ func checkForSlotsAvailability(i interface{}) {
         content = fmt.Sprintf("Date: %v | Dose No: 2 | Age: %v+\nAvailable: %v %v\n%v-%v",
         date, ageLimit, availableDose2, vaccine, c["name"], c["address"])
         alert(content)
+        alertsTrackerMap[centerId+"_"+sessionId] = availableDose2
+
         fmt.Println("***********************************")
         fmt.Println("***********************************")
       }
