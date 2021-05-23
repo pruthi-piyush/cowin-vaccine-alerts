@@ -128,63 +128,65 @@ func checkForSlotsAvailability(i interface{}) {
     c := center.(map[string]interface{})
 
     sessions := c["sessions"].([]interface{})
-    session := sessions[0].(map[string]interface{})
-    ageLimit := session["min_age_limit"].(float64)
-    vaccine := session["vaccine"]
+    for _, sess := range(sessions) {
+      session := sess.(map[string]interface{})
+      ageLimit := session["min_age_limit"].(float64)
+      vaccine := session["vaccine"]
 
-    // discard undesired alerts
+      // discard undesired alerts
 
-    if int(ageLimit) != filters.age {
-      continue
+      if int(ageLimit) != filters.age {
+        continue
+      }
+
+      if filters.vaccine != "" && vaccine != filters.vaccine {
+        continue
+      }
+
+      date := session["date"]
+      availableDoses := session["available_capacity"].(float64)
+      availableDose1 := session["available_capacity_dose1"].(float64)
+      availableDose2 := session["available_capacity_dose2"].(float64)
+
+      fmt.Println(c["address"])
+      fmt.Println(c["name"])
+      fmt.Println("DATE => ", date)
+      fmt.Println("VACCINE => ",  vaccine)
+      fmt.Println("TOTAL DOSES =>", availableDoses)
+      fmt.Println("DOSE 1 =>", availableDose1)
+      fmt.Println("DOSE 2 =>", availableDose2)
+      fmt.Println("AGE LIMIT =>", ageLimit)
+      fmt.Println("***********************************")
+
+      if availableDose1 > 0  && filters.dose == 1 {
+        fmt.Println("***********************************")
+        fmt.Println("***********************************")
+        fmt.Println("DOSE 1 AVAILABILITY")
+        fmt.Println("ALERTTTTTTT")
+        fmt.Println("ALERTTTTTTT")
+        fmt.Println("ALERTTTTTTT")
+        content = fmt.Sprintf("Date: %v | Dose No: 1 | Age: %v+\nAvailable: %v %v\n%v-%v", 
+        date, ageLimit, availableDose1, vaccine, c["name"], c["address"])
+        alert(content)
+        fmt.Println("***********************************")
+        fmt.Println("***********************************")
+      }
+
+      if availableDose2 > 0  && filters.dose == 2 {
+        fmt.Println("***********************************")
+        fmt.Println("***********************************")
+        fmt.Println("DOSE 2 AVAILABILITY")
+        fmt.Println("ALERTTTTTTT")
+        fmt.Println("ALERTTTTTTT")
+        fmt.Println("ALERTTTTTTT")
+        content = fmt.Sprintf("Date: %v | Dose No: 2 | Age: %v+\nAvailable: %v %v\n%v-%v",
+        date, ageLimit, availableDose2, vaccine, c["name"], c["address"])
+        alert(content)
+        fmt.Println("***********************************")
+        fmt.Println("***********************************")
+      }
     }
-
-    if filters.vaccine != "" && vaccine != filters.vaccine {
-      continue
-    }
-
-    date := session["date"]
-    availableDoses := session["available_capacity"].(float64)
-    availableDose1 := session["available_capacity_dose1"].(float64)
-    availableDose2 := session["available_capacity_dose2"].(float64)
-
-    fmt.Println(c["address"])
-    fmt.Println(c["name"])
-    fmt.Println("DATE => ", date)
-    fmt.Println("VACCINE => ",  vaccine)
-    fmt.Println("TOTAL DOSES =>", availableDoses)
-    fmt.Println("DOSE 1 =>", availableDose1)
-    fmt.Println("DOSE 2 =>", availableDose2)
-    fmt.Println("AGE LIMIT =>", ageLimit)
-    fmt.Println("***********************************")
-
-    if availableDose1 > 0  && filters.dose == 1 {
-      fmt.Println("***********************************")
-      fmt.Println("***********************************")
-      fmt.Println("DOSE 1 AVAILABILITY")
-      fmt.Println("ALERTTTTTTT")
-      fmt.Println("ALERTTTTTTT")
-      fmt.Println("ALERTTTTTTT")
-      content = fmt.Sprintf("Date: %v | Dose No: 1 | Age: %v+\nAvailable: %v %v\n%v-%v", 
-                             date, ageLimit, availableDose1, vaccine, c["name"], c["address"])
-      alert(content)
-      fmt.Println("***********************************")
-      fmt.Println("***********************************")
-    }
-    
-    if availableDose2 > 0  && filters.dose == 2 {
-      fmt.Println("***********************************")
-      fmt.Println("***********************************")
-      fmt.Println("DOSE 2 AVAILABILITY")
-      fmt.Println("ALERTTTTTTT")
-      fmt.Println("ALERTTTTTTT")
-      fmt.Println("ALERTTTTTTT")
-      content = fmt.Sprintf("Date: %v | Dose No: 2 | Age: %v+\nAvailable: %v %v\n%v-%v",
-                            date, ageLimit, availableDose2, vaccine, c["name"], c["address"])
-      alert(content)
-      fmt.Println("***********************************")
-      fmt.Println("***********************************")
-    }
-  }
+}
 
 }
 
